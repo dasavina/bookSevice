@@ -10,7 +10,7 @@ using Data.Repositories.Interfaces;
 using Data.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-
+using Services.BusinessLogic;
 
 namespace Data
 {
