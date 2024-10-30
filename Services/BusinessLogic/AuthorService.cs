@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
-namespace Services.BusinessLogic
-{
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using AutoMapper;
@@ -13,8 +10,10 @@ namespace Services.BusinessLogic
     using Models.DTOs;
     using Models.Entities;
 
-    namespace YourProject.Services
-    {
+namespace Services.BusinessLogic
+{
+
+    
         public class AuthorService
         {
             private readonly IUnitOfWork _unitOfWork;
@@ -69,6 +68,6 @@ namespace Services.BusinessLogic
                 return true;
             }
         }
-    }
+
 
 }

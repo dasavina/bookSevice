@@ -3,18 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
-namespace Services.BusinessLogic
-{
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using AutoMapper;
     using Data.Repositories.Interfaces;
     using Models.DTOs;
     using Models.Entities;
+namespace Services.BusinessLogic
+{
 
-    namespace YourProject.Services
-    {
+
+   
         public class PublisherService
         {
             private readonly IUnitOfWork _unitOfWork;
@@ -69,6 +68,5 @@ namespace Services.BusinessLogic
                 return true;
             }
         }
-    }
 
 }

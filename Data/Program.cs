@@ -8,7 +8,10 @@ using FluentValidation.AspNetCore;
 using Data.Configurations;
 using Data.Repositories.Interfaces;
 using Data.Repositories;
-using Services.BusinessLogic;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+
+
 namespace Data
 {
     public class Program
