@@ -3,6 +3,7 @@ using Data.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Models.DTOs;
 using Models.Entities;
+using Services.BusinessLogic;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,94 +13,104 @@ using System.Threading.Tasks;
 
 namespace Controllers
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class BookController : ControllerBase
-    {
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly IMapper _mapper;
-
-        public BookController(IUnitOfWork unitOfWork, IMapper mapper)
+    using Microsoft.AspNetCore.Mvc;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using AutoMapper;
+    
+        [ApiController]
+        [Route("api/[controller]")]
+        public class BookController : ControllerBase
         {
-            _unitOfWork = unitOfWork;
-            _mapper = mapper;
-        }
+            private readonly BookService _bookService;
+            private readonly IMapper _mapper;
 
-        // GET: api/Book
-        [HttpGet]
-        public async Task<IActionResult> GetBooks()
-        {
-            var books = await _unitOfWork.Books.GetAllAsync();
-            var bookDtos = _mapper.Map<IEnumerable<BookDto>>(books);
-            return Ok(bookDtos);
-        }
-
-        // GET: api/Book/5
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetBook(int id)
-        {
-            var book = await _unitOfWork.Books.GetBookWithAuthorAsync(id);
-            if (book == null)
+            public BookController(BookService bookService, IMapper mapper)
             {
-                return NotFound();
+                _bookService = bookService;
+                _mapper = mapper;
             }
 
-            var bookDto = _mapper.Map<BookDetailedDto>(book);
-            return Ok(bookDto);
-        }
-
-        // POST: api/Book
-        [HttpPost]
-        public async Task<IActionResult> CreateBook([FromBody] BookDto bookDto)
-        {
-            if (!ModelState.IsValid)
+            // GET: api/Book
+            [HttpGet]
+            public async Task<IActionResult> GetBooks()
             {
-                return BadRequest(ModelState);
+                var bookDtos = await _bookService.GetAllBooksAsync();
+                return Ok(bookDtos);
             }
 
-            var book = _mapper.Map<Book>(bookDto);
-            await _unitOfWork.Books.AddAsync(book);
-            await _unitOfWork.SaveAsync();
-
-            return CreatedAtAction(nameof(GetBook), new { id = book.Id }, bookDto);
-        }
-
-        // PUT: api/Book/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateBook(int id, [FromBody] BookDto bookDto)
-        {
-            if (id != bookDto.Id || !ModelState.IsValid)
+            // GET: api/Book/5
+            [HttpGet("{id}")]
+            public async Task<IActionResult> GetBook(int id)
             {
-                return BadRequest();
+                var book = await _bookService.GetBookWithAuthorAsync(id);
+                if (book == null)
+                {
+                    return NotFound();
+                }
+
+                var bookDto = _mapper.Map<BookDetailedDto>(book);
+                return Ok(bookDto);
             }
 
-            var book = await _unitOfWork.Books.GetByIdAsync(id);
-            if (book == null)
+            // POST: api/Book
+            [HttpPost]
+            public async Task<IActionResult> CreateBook([FromBody] BookDto bookDto)
             {
-                return NotFound();
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                var createdBookDto = await _bookService.CreateBookAsync(bookDto);
+
+                return CreatedAtAction(nameof(GetBook), new { id = createdBookDto.Id }, createdBookDto);
             }
 
-            _mapper.Map(bookDto, book);
-            await _unitOfWork.SaveAsync();
-
-            return NoContent();
-        }
-
-        // DELETE: api/Book/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteBook(int id)
-        {
-            var book = await _unitOfWork.Books.GetByIdAsync(id);
-            if (book == null)
+            // PUT: api/Book/5
+            [HttpPut("{id}")]
+            public async Task<IActionResult> UpdateBook(int id, [FromBody] BookDto bookDto)
             {
-                return NotFound();
+                if (id != bookDto.Id || !ModelState.IsValid)
+                {
+                    return BadRequest();
+                }
+
+                var updated = await _bookService.UpdateBookAsync(id, bookDto);
+                if (!updated)
+                {
+                    return NotFound();
+                }
+
+                return NoContent();
             }
 
-            await _unitOfWork.Books.DeleteAsync(id);
-            await _unitOfWork.SaveAsync();
+            // DELETE: api/Book/5
+            [HttpDelete("{id}")]
+            public async Task<IActionResult> DeleteBook(int id)
+            {
+                var deleted = await _bookService.DeleteBookAsync(id);
+                if (!deleted)
+                {
+                    return NotFound();
+                }
 
-            return NoContent();
+                return NoContent();
+            }
+
+            // GET: api/Book with filter, sort, and pagination
+            [HttpGet("filter")]
+            public async Task<IActionResult> GetBooks(
+                [FromQuery] string titleFilter,
+                [FromQuery] string sortBy,
+                [FromQuery] int page = 1,
+                [FromQuery] int pageSize = 10)
+            {
+                var books = await _bookService.GetBooksFilteredPagedSorted(titleFilter, sortBy, page, pageSize);
+                return Ok(books);
+            }
         }
-    }
+    
+
 
 }

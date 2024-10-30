@@ -19,7 +19,7 @@ namespace Models
 
             // Book mappings
             CreateMap<Book, BookDto>()
-                .ForMember(dest => dest.AuthorName, opt => opt.MapFrom(src => src.Author.Name));
+                .ForMember(dest => dest.AuthorId, opt => opt.MapFrom(src => src.Author.Id));
 
             CreateMap<Book, BookDetailedDto>()
                 .ForMember(dest => dest.Author, opt => opt.MapFrom(src => src.Author))

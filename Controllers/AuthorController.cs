@@ -3,6 +3,7 @@ using Data.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Models.DTOs;
 using Models.Entities;
+using Services.BusinessLogic.YourProject.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,12 +16,12 @@ namespace Controllers
     [Route("api/[controller]")]
     public class AuthorController : ControllerBase
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly AuthorService _authorService;
         private readonly IMapper _mapper;
 
-        public AuthorController(IUnitOfWork unitOfWork, IMapper mapper)
+        public AuthorController(AuthorService authorService, IMapper mapper)
         {
-            _unitOfWork = unitOfWork;
+            _authorService = authorService;
             _mapper = mapper;
         }
 
@@ -28,7 +29,7 @@ namespace Controllers
         [HttpGet]
         public async Task<IActionResult> GetAuthors()
         {
-            var authors = await _unitOfWork.Authors.GetAllAsync();
+            var authors = await _authorService.GetAllAuthorsAsync();
             var authorDtos = _mapper.Map<IEnumerable<AuthorDto>>(authors);
             return Ok(authorDtos);
         }
@@ -37,7 +38,7 @@ namespace Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetAuthor(int id)
         {
-            var author = await _unitOfWork.Authors.GetAuthorWithBooksAsync(id);
+            var author = await _authorService.GetAuthorWithBooksAsync(id);
             if (author == null)
             {
                 return NotFound();
@@ -56,11 +57,9 @@ namespace Controllers
                 return BadRequest(ModelState);
             }
 
-            var author = _mapper.Map<Author>(authorDto);
-            await _unitOfWork.Authors.AddAsync(author);
-            await _unitOfWork.SaveAsync();
+            var createdAuthorDto = await _authorService.CreateAuthorAsync(authorDto);
 
-            return CreatedAtAction(nameof(GetAuthor), new { id = author.Id }, authorDto);
+            return CreatedAtAction(nameof(GetAuthor), new { id = createdAuthorDto.Id }, createdAuthorDto);
         }
     }
 

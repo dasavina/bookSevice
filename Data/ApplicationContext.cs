@@ -1,4 +1,5 @@
 ﻿using Data.Migrations;
+using Helpers;
 using Microsoft.EntityFrameworkCore;
 using Models.Entities;
 using System;
@@ -27,6 +28,11 @@ namespace Data.Configurations
             modelBuilder.ApplyConfiguration(new BookConfiguration());
             modelBuilder.ApplyConfiguration(new PublisherConfiguration());
             modelBuilder.ApplyConfiguration(new BookPublisherConfiguration());
+
+            base.OnModelCreating(modelBuilder);
+            DatabaseSeeder.SeedDatabase(modelBuilder);
+
+
         }
     }
 

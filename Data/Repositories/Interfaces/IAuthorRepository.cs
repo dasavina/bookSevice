@@ -15,18 +15,6 @@ namespace Data.Repositories.Interfaces
         Task<Author> GetAuthorWithBooksAsync(int id); // Eager loading for books
     }
 
-    public class AuthorRepository : GenericRepository<Author>, IAuthorRepository
-    {
-        public AuthorRepository(ApplicationDbContext context) : base(context)
-        {
-        }
-
-        // Eager loading: includes related Books
-        public async Task<Author> GetAuthorWithBooksAsync(int id)
-        {
-            return await _dbSet.Include(a => a.Books)
-                               .FirstOrDefaultAsync(a => a.Id == id);
-        }
-    }
+   
 
 }

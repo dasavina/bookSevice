@@ -1,6 +1,7 @@
 ﻿using Data.Configurations;
 using Data.Repositories.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Models.DTOs;
 using Models.Entities;
 using System;
 using System.Collections.Generic;
@@ -15,39 +16,8 @@ namespace Data.Repositories.Interfaces
         Task<Book> GetBookWithAuthorAsync(int id);  // Eager Loading
         Task<Book> GetBookExplicitLoadingAsync(int id);  // Explicit Loading
         Task<IEnumerable<Book>> GetBooksWithPublishersAsync();  // Many-to-many loading
+        Task<IEnumerable<BookDto>> GetBooksAsync(string titleFilter, string sortBy, int page, int pageSize);
     }
-
-    public class BookRepository : GenericRepository<Book>, IBookRepository
-    {
-        public BookRepository(ApplicationDbContext context) : base(context)
-        {
-        }
-
-        // Eager loading: includes related Author
-        public async Task<Book> GetBookWithAuthorAsync(int id)
-        {
-            return await _dbSet.Include(b => b.Author)
-                               .FirstOrDefaultAsync(b => b.Id == id);
-        }
-
-        // Explicit loading
-        public async Task<Book> GetBookExplicitLoadingAsync(int id)
-        {
-            var book = await _dbSet.FirstOrDefaultAsync(b => b.Id == id);
-            if (book != null)
-            {
-                await _context.Entry(book).Reference(b => b.Author).LoadAsync();
-            }
-            return book;
-        }
-
-        // Many-to-many relationship
-        public async Task<IEnumerable<Book>> GetBooksWithPublishersAsync()
-        {
-            return await _dbSet.Include(b => b.BookPublishers)
-                               .ThenInclude(bp => bp.Publisher)
-                               .ToListAsync();
-        }
-    }
-
 }
+
+    

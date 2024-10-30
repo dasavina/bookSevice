@@ -3,6 +3,7 @@ using Data.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Models.DTOs;
 using Models.Entities;
+using Services.BusinessLogic.YourProject.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,12 +16,12 @@ namespace Controllers
     [Route("api/[controller]")]
     public class PublisherController : ControllerBase
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly PublisherService _publisherService;
         private readonly IMapper _mapper;
 
-        public PublisherController(IUnitOfWork unitOfWork, IMapper mapper)
+        public PublisherController(PublisherService publisherService, IMapper mapper)
         {
-            _unitOfWork = unitOfWork;
+            _publisherService = publisherService;
             _mapper = mapper;
         }
 
@@ -28,7 +29,7 @@ namespace Controllers
         [HttpGet]
         public async Task<IActionResult> GetPublishers()
         {
-            var publishers = await _unitOfWork.Publishers.GetAllAsync();
+            var publishers = await _publisherService.GetAllPublishersAsync();
             var publisherDtos = _mapper.Map<IEnumerable<PublisherDto>>(publishers);
             return Ok(publisherDtos);
         }
@@ -37,7 +38,7 @@ namespace Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetPublisher(int id)
         {
-            var publisher = await _unitOfWork.Publishers.GetByIdAsync(id);
+            var publisher = await _publisherService.GetPublisherByIdAsync(id);
             if (publisher == null)
             {
                 return NotFound();
@@ -56,12 +57,8 @@ namespace Controllers
                 return BadRequest(ModelState);
             }
 
-            var publisher = _mapper.Map<Publisher>(publisherCreateDto);
-            await _unitOfWork.Publishers.AddAsync(publisher);
-            await _unitOfWork.SaveAsync();
-
-            var publisherDto = _mapper.Map<PublisherDto>(publisher);
-            return CreatedAtAction(nameof(GetPublisher), new { id = publisher.Id }, publisherDto);
+            var createdPublisherDto = await _publisherService.CreatePublisherAsync(publisherCreateDto);
+            return CreatedAtAction(nameof(GetPublisher), new { id = createdPublisherDto.Id }, createdPublisherDto);
         }
 
         // PUT: api/Publisher/5
@@ -73,14 +70,11 @@ namespace Controllers
                 return BadRequest();
             }
 
-            var publisher = await _unitOfWork.Publishers.GetByIdAsync(id);
-            if (publisher == null)
+            var isUpdated = await _publisherService.UpdatePublisherAsync(id, publisherUpdateDto);
+            if (!isUpdated)
             {
                 return NotFound();
             }
-
-            _mapper.Map(publisherUpdateDto, publisher);
-            await _unitOfWork.SaveAsync();
 
             return NoContent();
         }
@@ -89,14 +83,11 @@ namespace Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePublisher(int id)
         {
-            var publisher = await _unitOfWork.Publishers.GetByIdAsync(id);
-            if (publisher == null)
+            var isDeleted = await _publisherService.DeletePublisherAsync(id);
+            if (!isDeleted)
             {
                 return NotFound();
             }
-
-            await _unitOfWork.Publishers.DeleteAsync(id);
-            await _unitOfWork.SaveAsync();
 
             return NoContent();
         }
