@@ -3,6 +3,7 @@ using Data.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Models.DTOs;
 using Models.Entities;
+using AutoMapper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,7 @@ namespace Data.Repositories
 {
     public class BookRepository : GenericRepository<Book>, IBookRepository
     {
+
         public BookRepository(ApplicationDbContext context) : base(context)
         {
         }
@@ -43,7 +45,7 @@ namespace Data.Repositories
                                .ToListAsync();
         }
 
-        public async Task<IEnumerable<BookDto>> GetBooksAsync(string titleFilter = null, string sortBy = null, int page = 1, int pageSize = 10)
+        public async Task<IEnumerable<Book>> GetBooksAsync(string titleFilter = null, string sortBy = null, int page = 1, int pageSize = 10)
         {
             var books = _context.Books.AsQueryable();
 
@@ -64,7 +66,7 @@ namespace Data.Repositories
             // Paging
             books = books.Skip((page - 1) * pageSize).Take(pageSize);
 
-            return await books.Select(b => _mapper.Map<BookDto>(b)).ToListAsync();
+            return await books.ToListAsync();
         }
 
     }

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Data.Repositories;
 using Data.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Models.DTOs;
@@ -81,9 +82,11 @@ namespace Services.BusinessLogic
         {
             return await _unitOfWork.SaveAsync();
         }
-        public async Task<IEnumerable<BookDto>> GetBooksFilteredPagedSorted(string titleFilter, string sortBy, int page, int pageSize)
+       
+        public async Task<IEnumerable<BookDto>> GetBooksFilteredPagedSorted(string titleFilter = null, string sortBy = null, int page = 1, int pageSize = 10)
         {
-            return await _unitOfWork.Books.GetBooksAsync(titleFilter, sortBy, page, pageSize);
+            var books = await _unitOfWork.Books.GetBooksAsync(titleFilter, sortBy, page, pageSize);
+            return books.Select(b => _mapper.Map<BookDto>(b));
         }
 
 
