@@ -15,6 +15,7 @@ namespace Data.Repositories
         public IBookRepository Books { get; private set; }
         public IAuthorRepository Authors { get; private set; }
         public IPublisherRepository Publishers { get; private set; }
+        public IBookPublisherRepository BookPublishers { get; private set; }
 
         public UnitOfWork(ApplicationDbContext context)
         {
@@ -22,6 +23,7 @@ namespace Data.Repositories
             Books = new BookRepository(_context);
             Authors = new AuthorRepository(_context);
             Publishers = new PublisherRepository(_context);
+            BookPublishers = new BookPublisherRepository(_context);
         }
 
         public async Task<int> SaveAsync()

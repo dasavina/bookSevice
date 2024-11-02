@@ -1,5 +1,4 @@
-﻿using Models.Entities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -8,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Models.DTOs
 {
-    public class BookDto
+    public class DetailedBookDTO
     {
         public int Id { get; set; }
 
@@ -22,8 +21,7 @@ namespace Models.DTOs
 
         public DateTime PublishedDate { get; set; }
 
-        [Required]
-        public int AuthorId { get; set; }
+       public string AuthorName { get; set; }
+        public ICollection<string> PublisherNames { get; set; }
     }
-
 }

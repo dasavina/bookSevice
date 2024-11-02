@@ -1,9 +1,10 @@
 ﻿using AutoMapper;
+using BLL.BusinessLogic;
 using Data.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Models.DTOs;
 using Models.Entities;
-using Services.BusinessLogic;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -44,7 +45,7 @@ namespace Controllers
                 return NotFound();
             }
 
-            var authorDto = _mapper.Map<AuthorDto>(author);
+            var authorDto = _mapper.Map<AuthorWithBooksDTO>(author);
             return Ok(authorDto);
         }
 

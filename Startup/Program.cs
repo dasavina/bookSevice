@@ -9,14 +9,36 @@ using Data.Repositories.Interfaces;
 using Data.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Services.BusinessLogic;
 using Services.Validation;
 using Microsoft.OpenApi.Models;
+using BLL.BusinessLogic;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container
 builder.Services.AddControllers();
+
+// Configure DbContext with connection string from app settings
+builder.Services.AddDbContext<ApplicationDbContext>();
+
+// Configure repositories
+builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
+builder.Services.AddScoped<IBookRepository, BookRepository>();
+builder.Services.AddScoped<IPublisherRepository, PublisherRepository>();
+builder.Services.AddScoped<BookPublisherRepository>();
+
+// Configure Unit of Work
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+// Configure services
+builder.Services.AddScoped<BookService>();
+builder.Services.AddScoped<AuthorService>();
+builder.Services.AddScoped<PublisherService>();
+builder.Services.AddScoped<BookPublisherService>();
+
+
+// Configure AutoMapper
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 // Configure Swagger services
 builder.Services.AddEndpointsApiExplorer();
@@ -42,21 +64,3 @@ app.MapControllers();
 app.Run();
 
 
-// Configure DbContext with connection string from app settings
-builder.Services.AddDbContext<ApplicationDbContext>();
-
-// Configure repositories
-builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
-builder.Services.AddScoped<IBookRepository, BookRepository>();
-builder.Services.AddScoped<IPublisherRepository, PublisherRepository>();
-
-// Configure Unit of Work
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-
-// Configure services
-builder.Services.AddScoped<BookService>();
-builder.Services.AddScoped<AuthorService>();
-builder.Services.AddScoped<PublisherService>();
-
-// Configure AutoMapper
-builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());

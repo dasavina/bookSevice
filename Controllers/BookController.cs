@@ -3,7 +3,6 @@ using Data.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Models.DTOs;
 using Models.Entities;
-using Services.BusinessLogic;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,8 +16,9 @@ namespace Controllers
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using AutoMapper;
-    
-        [ApiController]
+    using BLL.BusinessLogic;
+
+    [ApiController]
         [Route("api/[controller]")]
         public class BookController : ControllerBase
         {
@@ -49,12 +49,22 @@ namespace Controllers
                     return NotFound();
                 }
 
-                var bookDto = _mapper.Map<BookDetailedDto>(book);
+                var bookDto = _mapper.Map<BookDto>(book);
                 return Ok(bookDto);
             }
 
-            // POST: api/Book
-            [HttpPost]
+        [HttpGet("FullInfo/{id}")]
+        public async Task<IActionResult> GetFullInfo(int id)
+        {
+            var detailedBook = await _bookService.GetFullInfoAsync(id);
+            if (detailedBook == null) return NotFound();
+
+            return Ok(detailedBook);
+        }
+
+
+        // POST: api/Book
+        [HttpPost]
             public async Task<IActionResult> CreateBook([FromBody] BookDto bookDto)
             {
                 if (!ModelState.IsValid)

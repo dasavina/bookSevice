@@ -10,7 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Services.BusinessLogic
+namespace BLL.BusinessLogic
 {
     public class BookService
     {
@@ -72,10 +72,13 @@ namespace Services.BusinessLogic
             return _mapper.Map<BookDto>(book);
         }
 
-        public async Task<IEnumerable<BookDto>> GetBooksWithPublishersAsync()
+        public async Task<DetailedBookDTO> GetFullInfoAsync(int bookId)
         {
-            var books = await _unitOfWork.Books.GetBooksWithPublishersAsync();
-            return _mapper.Map<IEnumerable<BookDto>>(books);
+            var book = await _unitOfWork.Books.GetBookWithDetailsAsync(bookId);
+            if (book == null) return null;
+
+            var detailedBookDto = _mapper.Map<DetailedBookDTO>(book);
+            return detailedBookDto;
         }
 
         public async Task<int> SaveChangesAsync()

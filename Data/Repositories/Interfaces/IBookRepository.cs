@@ -15,7 +15,7 @@ namespace Data.Repositories.Interfaces
     {
         Task<Book> GetBookWithAuthorAsync(int id);  // Eager Loading
         Task<Book> GetBookExplicitLoadingAsync(int id);  // Explicit Loading
-        Task<IEnumerable<Book>> GetBooksWithPublishersAsync();  // Many-to-many loading
+        Task<Book> GetBookWithDetailsAsync(int bookId);
         Task<IEnumerable<Book>> GetBooksAsync(string titleFilter, string sortBy, int page, int pageSize);
     }
 }

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
     using Data.Repositories.Interfaces;
     using Models.DTOs;
     using Models.Entities;
-namespace Services.BusinessLogic
+namespace BLL.BusinessLogic
 {
 
 

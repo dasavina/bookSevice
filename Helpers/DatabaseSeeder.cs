@@ -26,7 +26,7 @@ namespace Helpers
 
             // Seed Books
             modelBuilder.Entity<Book>().HasData(
-                new Book { Id = 1, Title = "book1", ISBN = "111-1234567890", PublishedDate = new DateTime(20021, 6, 8), AuthorId = 1 },
+                new Book { Id = 1, Title = "book1", ISBN = "111-1234567890", PublishedDate = new DateTime(2021, 6, 8), AuthorId = 1 },
                 new Book { Id = 2, Title = "book2", ISBN = "222-1234567890", PublishedDate = new DateTime(2021, 6, 26), AuthorId = 2 }
             );
 

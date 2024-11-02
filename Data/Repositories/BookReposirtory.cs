@@ -38,11 +38,13 @@ namespace Data.Repositories
         }
 
         // Many-to-many relationship
-        public async Task<IEnumerable<Book>> GetBooksWithPublishersAsync()
+        public async Task<Book> GetBookWithDetailsAsync(int bookId)
         {
-            return await _dbSet.Include(b => b.BookPublishers)
-                               .ThenInclude(bp => bp.Publisher)
-                               .ToListAsync();
+            return await _context.Books
+                .Include(b => b.Author)
+                .Include(b => b.BookPublishers)
+                    .ThenInclude(bp => bp.Publisher)
+                .FirstOrDefaultAsync(b => b.Id == bookId);
         }
 
         public async Task<IEnumerable<Book>> GetBooksAsync(string titleFilter = null, string sortBy = null, int page = 1, int pageSize = 10)

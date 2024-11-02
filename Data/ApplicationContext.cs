@@ -28,9 +28,25 @@ namespace Data.Configurations
             modelBuilder.ApplyConfiguration(new BookConfiguration());
             modelBuilder.ApplyConfiguration(new PublisherConfiguration());
             modelBuilder.ApplyConfiguration(new BookPublisherConfiguration());
+            modelBuilder.ApplyConfiguration(new BookPublisherConfiguration());
+
+            modelBuilder.Entity<BookPublisher>()
+            .HasKey(bp => new { bp.BookId, bp.PublisherId });
+
+            // Configure relationships
+            modelBuilder.Entity<BookPublisher>()
+                .HasOne(bp => bp.Book)
+                .WithMany(b => b.BookPublishers)
+                .HasForeignKey(bp => bp.BookId);
+
+            modelBuilder.Entity<BookPublisher>()
+                .HasOne(bp => bp.Publisher)
+                .WithMany(p => p.BookPublishers)
+                .HasForeignKey(bp => bp.PublisherId);
 
             base.OnModelCreating(modelBuilder);
             DatabaseSeeder.SeedDatabase(modelBuilder);
+
 
 
         }

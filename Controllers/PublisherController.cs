@@ -1,9 +1,10 @@
 ﻿using AutoMapper;
+using BLL.BusinessLogic;
 using Data.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Models.DTOs;
 using Models.Entities;
-using Services.BusinessLogic;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;

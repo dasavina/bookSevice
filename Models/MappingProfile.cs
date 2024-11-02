@@ -17,16 +17,41 @@ namespace Models
             CreateMap<Author, AuthorDto>();
             CreateMap<AuthorDto, Author>();
 
-            // Book mappings
+            CreateMap<Author, AuthorWithBooksDTO>();
+            CreateMap<AuthorWithBooksDTO, Author>();
+
+            CreateMap<BookDto, Book>();
             CreateMap<Book, BookDto>()
                 .ForMember(dest => dest.AuthorId, opt => opt.MapFrom(src => src.Author.Id));
 
-            CreateMap<Book, BookDetailedDto>()
-                .ForMember(dest => dest.Author, opt => opt.MapFrom(src => src.Author))
-                .ForMember(dest => dest.Publishers, opt => opt.MapFrom(src => src.BookPublishers.Select(bp => bp.Publisher)));
+            CreateMap<Book, DetailedBookDTO>()
+                        .ForMember(dest => dest.AuthorName, opt => opt.MapFrom(src => src.Author.Name))
+                        .ForMember(dest => dest.PublisherNames, opt => opt.MapFrom(src => src.BookPublishers.Select(bp => bp.Publisher.Name)));
+
+            CreateMap<Book, BookDto>()
+                .ForMember(dest => dest.AuthorId, opt => opt.MapFrom(src => src.Author.Id));
+                
+
+            CreateMap<BookDto, BookPublisherDto>()
+                .ForMember(dest => dest.BookId, opt => opt.MapFrom(src => src.Id));
+            CreateMap<BookPublisherDto, BookDto>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.BookId));
+
+            CreateMap<PublisherDto, BookPublisherDto>()
+               .ForMember(dest => dest.PublisherId, opt => opt.MapFrom(src => src.Id));
+            CreateMap<BookPublisherDto, PublisherDto>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.PublisherId));
+
+            CreateMap<BookPublisher, BookPublisherDto>();
+            CreateMap<BookPublisherDto, BookPublisher>();
+
+            CreateMap<Book, BookPublisherDto>();
+            CreateMap<BookPublisherDto, Book>();
 
             // Publisher mappings
             CreateMap<Publisher, PublisherDto>();
+            CreateMap<PublisherDto, Publisher>();
+
         }
     }
 

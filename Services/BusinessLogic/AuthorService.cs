@@ -11,7 +11,7 @@ using System.Threading.Tasks;
     using Models.Entities;
 using Data.Repositories;
 
-namespace Services.BusinessLogic
+namespace BLL.BusinessLogic
 {
 
     
@@ -69,7 +69,7 @@ namespace Services.BusinessLogic
                 return true;
             }
 
-        public async Task<AuthorDto> GetAuthorWithBooksAsync(int authorId)
+        public async Task<AuthorWithBooksDTO> GetAuthorWithBooksAsync(int authorId)
         {
             // Call the repository method to get the author and their books
             var author = await _unitOfWork.Authors.GetAuthorWithBooksAsync(authorId);
@@ -81,7 +81,7 @@ namespace Services.BusinessLogic
             }
 
             // Map the author to AuthorWithBooksDto for returning a structured response
-            var authorDto = _mapper.Map<AuthorDto>(author);
+            var authorDto = _mapper.Map<AuthorWithBooksDTO>(author);
             return authorDto;
         }
     }

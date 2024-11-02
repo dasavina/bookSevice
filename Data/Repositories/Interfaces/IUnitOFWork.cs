@@ -11,6 +11,7 @@ namespace Data.Repositories.Interfaces
         IBookRepository Books { get; }
         IAuthorRepository Authors { get; }
         IPublisherRepository Publishers { get; }
+        IBookPublisherRepository BookPublishers { get; }
         Task<int> SaveAsync();
     }
 
