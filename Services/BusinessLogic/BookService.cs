@@ -2,8 +2,11 @@
 using Data.Repositories;
 using Data.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.Memory;
 using Models.DTOs;
 using Models.Entities;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,12 +19,17 @@ namespace BLL.BusinessLogic
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IMemoryCache _cache;
+        private readonly IDistributedCache _distributedCache;
 
-        public BookService(IUnitOfWork unitOfWork, IMapper mapper)
+        public BookService(IUnitOfWork unitOfWork, IMapper mapper, IDistributedCache distributedCache)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _distributedCache = distributedCache;
         }
+
+
         public async Task<IEnumerable<BookDto>> GetAllBooksAsync()
         {
             var books = await _unitOfWork.Books.GetAllAsync();
@@ -71,6 +79,33 @@ namespace BLL.BusinessLogic
             var book = await _unitOfWork.Books.GetBookWithAuthorAsync(id);
             return _mapper.Map<BookDto>(book);
         }
+
+        public async Task<BookDto> GetBookByIdCachedAsync(int id)
+        {
+            var cacheKey = $"Book_{id}";
+            var cachedBook = await _distributedCache.GetStringAsync(cacheKey);
+
+            if (cachedBook != null)
+            {
+                return JsonConvert.DeserializeObject<BookDto>(cachedBook);
+            }
+            else
+            {
+                var book = await _unitOfWork.Books.GetByIdAsync(id);
+                var bookDto = _mapper.Map<BookDto>(book);
+
+                var cacheOptions = new DistributedCacheEntryOptions
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10), // Absolute Expiration
+                    SlidingExpiration = TimeSpan.FromMinutes(5) // Sliding Expiration
+                };
+
+                await _distributedCache.SetStringAsync(cacheKey, JsonConvert.SerializeObject(bookDto), cacheOptions);
+
+                return bookDto;
+            }
+        }
+
 
         public async Task<DetailedBookDTO> GetFullInfoAsync(int bookId)
         {

@@ -40,6 +40,16 @@ builder.Services.AddScoped<BookPublisherService>();
 // Configure AutoMapper
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
+builder.Services.AddMemoryCache(options =>
+{
+    options.SizeLimit = 1024; // Ліміт у 1024 умовні одиниці
+});
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = "localhost:6379"; // замініть на URL вашого Redis-сервера
+    options.InstanceName = "SampleInstance";
+});
+
 // Configure Swagger services
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
